@@ -1,0 +1,61 @@
+---
+import LanguagePicker from './LanguagePicker.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<header class="header">
+  <div class="nav-container">
+    <a href={`/${lang}/`} class="logo">matjaz.dev</a>
+    <nav class="nav-links">
+      <a href={`/${lang}/`}>{t('nav.home')}</a>
+      <a href={`/${lang}/#projects`}>{t('nav.projects')}</a>
+      <a href={`/${lang}/homelab`}>{t('nav.homelab')}</a>
+    </nav>
+    <LanguagePicker />
+  </div>
+</header>
+
+<style>
+  .header {
+    background: #0f172a;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .logo {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--text-main);
+  }
+  .nav-links {
+    display: flex;
+    gap: 1.2rem;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .nav-links a:hover {
+    color: var(--accent);
+  }
+
+  @media (max-width: 600px) {
+    .nav-container {
+      justify-content: space-between;
+    }
+  }
+</style>

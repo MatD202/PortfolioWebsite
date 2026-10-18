@@ -1,0 +1,94 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { homelabData } from '../../data/homelab';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: 'sl' } },
+    { params: { lang: 'en' } }
+  ];
+}
+
+const { lang } = Astro.params as { lang: 'sl' | 'en' };
+const data = homelabData[lang];
+---
+
+<Layout title={`${data.title} | Portfolio`} lang={lang}>
+  <article class="homelab-detail">
+    <a href={`/${lang}/`} class="back-link">← {lang === 'sl' ? 'Nazaj na prvo stran' : 'Back to Home'}</a>
+    
+    <h1>{data.title}</h1>
+    <p class="subtitle">{data.subtitle}</p>
+
+    <img src={data.image} alt={data.title} class="main-image" />
+
+    <p class="description">{data.description}</p>
+
+    <h2>{lang === 'sl' ? 'Tehnične Specifikacije' : 'Technical Hardware & Stack'}</h2>
+    <ul class="specs-grid">
+      {data.specs.map(spec => (
+        <li class="spec-card">
+          <span class="spec-name">{spec.name}</span>
+          <span class="spec-value">{spec.value}</span>
+        </li>
+      ))}
+    </ul>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+  .homelab-detail h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.3rem;
+  }
+  .subtitle {
+    color: var(--accent);
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  .main-image {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+  }
+  .description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+  }
+  .specs-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 600px) {
+    .specs-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .spec-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    padding: 1.2rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+  }
+  .spec-name {
+    color: var(--accent);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  .spec-value {
+    font-weight: bold;
+    margin-top: 0.3rem;
+  }
+</style>

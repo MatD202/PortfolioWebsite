@@ -1,0 +1,52 @@
+---
+import { languages } from '../i18n/ui';
+import { getLangFromUrl } from '../i18n/utils';
+
+const currentLang = getLangFromUrl(Astro.url);
+const currentPath = Astro.url.pathname;
+
+// Function to construct new URL for switching language
+function getLanguageUrl(targetLang: string) {
+  const parts = currentPath.split('/').filter(Boolean);
+  if (parts[0] === 'sl' || parts[0] === 'en') {
+    parts[0] = targetLang;
+  } else {
+    parts.unshift(targetLang);
+  }
+  return '/' + parts.join('/');
+}
+---
+
+<div class="lang-picker">
+  {Object.entries(languages).map(([lang, name]) => (
+    <a 
+      href={getLanguageUrl(lang)} 
+      class:list={['lang-link', { active: currentLang === lang }]}
+    >
+      {lang.toUpperCase()}
+    </a>
+  ))}
+</div>
+
+<style>
+  .lang-picker {
+    display: flex;
+    gap: 0.5rem;
+    background: #1e293b;
+    padding: 0.3rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+  }
+  .lang-link {
+    color: var(--text-muted);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .lang-link.active {
+    background-color: var(--accent);
+    color: #0f172a;
+  }
+</style>

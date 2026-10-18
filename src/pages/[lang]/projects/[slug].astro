@@ -1,0 +1,88 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { projects } from '../../../data/projects';
+
+export function getStaticPaths() {
+  const paths: Array<{ params: { lang: 'sl' | 'en'; slug: string } }> = [];
+  const langs: Array<'sl' | 'en'> = ['sl', 'en'];
+
+  for (const lang of langs) {
+    for (const proj of projects) {
+      paths.push({
+        params: { lang, slug: proj.slug }
+      });
+    }
+  }
+  return paths;
+}
+
+const { lang, slug } = Astro.params as { lang: 'sl' | 'en'; slug: string };
+const project = projects.find(p => p.slug === slug);
+
+if (!project) {
+  throw new Error(`Project not found: ${slug}`);
+}
+---
+
+<Layout title={`${project.title[lang]} | Portfolio`} lang={lang}>
+  <article class="project-detail">
+    <a href={`/${lang}/#projects`} class="back-link">← {lang === 'sl' ? 'Nazaj na projekte' : 'Back to Projects'}</a>
+
+    <h1>{project.title[lang]}</h1>
+    
+    <div class="tags">
+      {project.tags.map(tag => <span class="badge">{tag}</span>)}
+    </div>
+
+    <!-- Scrollable Photo Gallery -->
+    <div class="gallery">
+      {project.images.map((img, idx) => (
+        <img src={img} alt={`${project.title[lang]} detail image ${idx + 1}`} />
+      ))}
+    </div>
+
+    <div class="content">
+      <h2>{lang === 'sl' ? 'O Projektu' : 'About the Project'}</h2>
+      <p>{project.details[lang]}</p>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+  }
+  .project-detail h1 {
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+  }
+  .tags {
+    margin-bottom: 1.5rem;
+  }
+  .gallery {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+  }
+  .gallery img {
+    flex: 0 0 90%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 12px;
+    scroll-snap-align: center;
+  }
+  @media (min-width: 768px) {
+    .gallery img {
+      flex: 0 0 70%;
+    }
+  }
+  .content p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+---
+
+<footer class="footer">
+  <div class="container">
+    <p>&copy; {new Date().getFullYear()} Matjaž Dovečar. {t('footer.rights')}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 3rem;
+  }
+</style>
