@@ -30,13 +30,17 @@ function getLanguageUrl(targetLang: string) {
 
 <style>
   .lang-picker {
-    display: flex;
-    gap: 0.5rem;
-    background: #1e293b;
-    padding: 0.3rem;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-  }
+  display: flex;
+  gap: 0.3rem;
+  background: var(--badge-bg);
+  padding: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+.lang-link.active {
+  background-color: var(--accent);
+  color: var(--btn-text);
+}
   .lang-link {
     color: var(--text-muted);
     padding: 0.2rem 0.6rem;
@@ -45,8 +49,5 @@ function getLanguageUrl(targetLang: string) {
     font-weight: bold;
     text-decoration: none;
   }
-  .lang-link.active {
-    background-color: var(--accent);
-    color: #0f172a;
-  }
+  
 </style>
