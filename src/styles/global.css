@@ -1,22 +1,22 @@
 :root {
     /* Page background */
-  --bg-color: #313338;
+  --bg-color: #F5F0E8;
 
   /* Containers & Cards */
-  --card-bg: #2B2D31;
+  --card-bg: #E8DCCB;
 
   /* Text colors */
-  --text-main: #F2F3F5;
-  --text-muted: #B5BAC1;
+  --text-main: #3B3028;
+  --text-muted: #78685A;
 
   /* Interactive & Accent elements */
-  --accent: #5865F2;
-  --accent-hover: #4752C4;
+  --accent: #8B6F50;
+  --accent-hover: #6F563E;
   --btn-text: #FFFFFF;
 
   /* UI Borders & Accents */
-  --border-color: #3F4147;
-  --badge-bg: #404249;
+  --border-color: #C4AD91;
+  --badge-bg: #A38768;
 }
 
 /* Base Styles */
@@ -75,7 +75,7 @@ a:hover {
 
 .badge {
   background-color: var(--badge-bg);
-  color: var(--accent);
+  color: var(--btn-text);
   border: 1px solid var(--border-color);
   padding: 0.25rem 0.6rem;
   border-radius: 4px;
