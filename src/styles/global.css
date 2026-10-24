@@ -1,31 +1,22 @@
 :root {
-  /* ==========================================================================
-     COLOR PALETTE
-     - #E2ECF4 : Soft light blue/grey (Main background)
-     - #FFFFFF : Pure white (Card & container surfaces for crisp contrast)
-     - #9ABED4 : Muted sky blue (Borders, subtle dividers, soft badges)
-     - #295D7C : Deep steel blue (Primary actions, links, secondary text)
-     - #0A2235 : Very dark navy (Main text & headings for sharp legibility)
-     ========================================================================== */
-
-  /* Page background */
-  --bg-color: #E2ECF4;        /* Light greyish-blue overall site background */
+    /* Page background */
+  --bg-color: #313338;
 
   /* Containers & Cards */
-  --card-bg: #FFFFFF;         /* White background for cards, headers, and popovers */
-  
+  --card-bg: #2B2D31;
+
   /* Text colors */
-  --text-main: #0A2235;       /* Very dark navy - for primary text & headings */
-  --text-muted: #295D7C;      /* Steel blue - for descriptions, metadata & subheadings */
+  --text-main: #F2F3F5;
+  --text-muted: #B5BAC1;
 
   /* Interactive & Accent elements */
-  --accent: #295D7C;          /* Main accent color for buttons, active tags & links */
-  --accent-hover: #0A2235;    /* Hover state for buttons and clickable items */
-  --btn-text: #E2ECF4;        /* Text color inside buttons */
+  --accent: #5865F2;
+  --accent-hover: #4752C4;
+  --btn-text: #FFFFFF;
 
   /* UI Borders & Accents */
-  --border-color: #9ABED4;    /* Subtle blue border color for cards & inputs */
-  --badge-bg: #E2ECF4;        /* Background for tag badges */
+  --border-color: #3F4147;
+  --badge-bg: #404249;
 }
 
 /* Base Styles */
@@ -45,6 +36,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-main);
   line-height: 1.6;
+  scroll-behavior: smooth;
 }
 
 a {
