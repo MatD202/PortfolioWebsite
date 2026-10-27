@@ -14,8 +14,6 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    export const projects: Project[] = [
-  {
     slug: 'DevOps-Platform-Engineering-Homelab',
     images: [
       'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
@@ -91,8 +89,6 @@ This project provides a practical environment for exploring Kubernetes infrastru
 
 Technologies and capabilities are being introduced incrementally, with documentation reflecting the work actually completed.`
     }
-  }
-];
   },
   {
     slug: 'network-monitor-dashboard',
@@ -117,10 +113,10 @@ Technologies and capabilities are being introduced incrementally, with documenta
   {
     slug: 'Unity3d-Game',
     images: [
-      'gamematura1.src',
-      'gamematura2.src',
-      'gamematura3.src',
-      'gamematura4.src'
+      gamematura1.src,
+      gamematura2.src,
+      gamematura3.src,
+      gamematura4.src
     ],
     tags: ['Unity 3D', 'C#', '.NET Framework', 'Unity Version Control', 'URP'],
     title: {
