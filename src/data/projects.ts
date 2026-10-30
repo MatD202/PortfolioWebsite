@@ -89,8 +89,6 @@ This project provides a practical environment for exploring Kubernetes infrastru
 
 Technologies and capabilities are being introduced incrementally, with documentation reflecting the work actually completed.`
     }
-  }
-];
   },
   {
     slug: 'network-monitor-dashboard',
@@ -115,10 +113,10 @@ Technologies and capabilities are being introduced incrementally, with documenta
   {
     slug: 'Unity3d-Game',
     images: [
-      'gamematura1.src',
-      'gamematura2.src',
-      'gamematura3.src',
-      'gamematura4.src'
+      gamematura1.src,
+      gamematura2.src,
+      gamematura3.src,
+      gamematura4.src
     ],
     tags: ['Unity 3D', 'C#', '.NET Framework', 'Unity Version Control', 'URP'],
     title: {
@@ -130,7 +128,7 @@ Technologies and capabilities are being introduced incrementally, with documenta
       en: 'A 3D dungeon crawler featuring procedurally generated levels, six unique enemy types with distinct behaviors, a magic system, and a variety of weapons.'
     },
     details: {
-  sl: `## Opis igre
+      sl: `## Opis igre
 
 3D dungeon crawler igra, razvita v Unityju za maturitetno nalogo. Igralec raziskuje po meri izdelan začetni nivo in dva proceduralno generirana nivoja, se spopada z različnimi vrstami pošasti ter uporablja raznoliko orožje in magijo za premagovanje sovražnikov.
 
@@ -165,8 +163,7 @@ Napoji imajo različne učinke. Napoj za zdravje lahko na primer obnovi izgublje
 ## Razvoj
 
 Pri razvoju sem se osredotočil na izdelavo 3D igralnega okolja, implementacijo različnih vrst sovražnikov in njihovih načinov napadanja, razvoj sistema proceduralnega generiranja nivojev ter povezovanje različnih igralnih sistemov v celovito igralno izkušnjo.`,
-
-  en: `## Game Overview
+      en: `## Game Overview
 
 A 3D dungeon crawler developed in Unity as a graduation project. Players explore a custom-designed starting level and two procedurally generated levels, battle different types of monsters, and use a variety of weapons and magic to defeat their enemies.
 
@@ -201,6 +198,6 @@ Each potion has its own effects. For example, a health potion can restore lost h
 ## Development
 
 During development, I focused on creating the 3D game environment, implementing different enemy types and their attack behaviors, developing the procedural level generation system, and integrating the various gameplay systems into a cohesive gaming experience.`
-}
+    }
   }
 ];
