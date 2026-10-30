@@ -14,8 +14,6 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    export const projects: Project[] = [
-  {
     slug: 'DevOps-Platform-Engineering-Homelab',
     images: [
       'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
