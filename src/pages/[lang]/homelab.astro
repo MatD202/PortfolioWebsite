@@ -33,6 +33,13 @@ const data = homelabData[lang];
         </li>
       ))}
     </ul>
+
+    {data.sections.map(section => (
+      <section class="homelab-section">
+        <h2>{section.title}</h2>
+        {section.paragraphs.map(paragraph => <p>{paragraph}</p>)}
+      </section>
+    ))}
   </article>
 </Layout>
 
@@ -90,5 +97,19 @@ const data = homelabData[lang];
   .spec-value {
     font-weight: bold;
     margin-top: 0.3rem;
+  }
+  .homelab-section {
+    margin-top: 2.5rem;
+  }
+  .homelab-section h2 {
+    margin-bottom: 0.75rem;
+  }
+  .homelab-section p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+  .homelab-section p + p {
+    margin-top: 1rem;
   }
 </style>

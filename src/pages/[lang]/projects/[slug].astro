@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
 import { projects } from '../../../data/projects';
+import { marked } from 'marked';
 
 export function getStaticPaths() {
   const paths: Array<{ params: { lang: 'sl' | 'en'; slug: string } }> = [];
@@ -22,6 +23,9 @@ const project = projects.find(p => p.slug === slug);
 if (!project) {
   throw new Error(`Project not found: ${slug}`);
 }
+
+// Markdown is authored locally in src/data/projects.ts.
+const detailsHtml = marked.parse(project.details[lang], { async: false });
 ---
 
 <Layout title={`${project.title[lang]} | Portfolio`} lang={lang}>
@@ -43,7 +47,7 @@ if (!project) {
 
     <div class="content">
       <h2>{lang === 'sl' ? 'O Projektu' : 'About the Project'}</h2>
-      <p>{project.details[lang]}</p>
+      <div class="markdown" set:html={detailsHtml} />
     </div>
   </article>
 </Layout>
@@ -80,9 +84,75 @@ if (!project) {
       flex: 0 0 70%;
     }
   }
-  .content p {
+  .markdown {
     font-size: 1.1rem;
     color: var(--text-muted);
     line-height: 1.8;
+    overflow-wrap: anywhere;
+  }
+  .markdown :global(> * + *) {
+    margin-top: 1rem;
+  }
+  .markdown :global(h1),
+  .markdown :global(h2),
+  .markdown :global(h3),
+  .markdown :global(h4),
+  .markdown :global(h5),
+  .markdown :global(h6) {
+    color: var(--text-main);
+    line-height: 1.3;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .markdown :global(ul),
+  .markdown :global(ol) {
+    padding-left: 1.5rem;
+  }
+  .markdown :global(li + li) {
+    margin-top: 0.4rem;
+  }
+  .markdown :global(li > ul),
+  .markdown :global(li > ol) {
+    margin-top: 0.4rem;
+  }
+  .markdown :global(a) {
+    text-decoration: underline;
+  }
+  .markdown :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+  }
+  .markdown :global(code) {
+    background: var(--card-bg);
+    border-radius: 4px;
+    padding: 0.15em 0.3em;
+    font-size: 0.9em;
+  }
+  .markdown :global(pre) {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  .markdown :global(pre code) {
+    padding: 0;
+  }
+  .markdown :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+  .markdown :global(table) {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .markdown :global(th),
+  .markdown :global(td) {
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+  }
+  .markdown :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--border-color);
   }
 </style>
