@@ -34,60 +34,46 @@ export const projects: Project[] = [
       en: 'Building a Self-Hosted Kubernetes Platform Engineering Lab'
     },
     summary: {
-      sl: 'Vzpostavljam multi-node Kubernetes okolje na treh fizičnih računalnikih z uporabo K3s. Projekt je namenjen pridobivanju praktičnih izkušenj z administracijo Linux sistemov, orkestracijo kontejnerjev in postopno avtomatizacijo infrastrukture.',
-      en: 'Building a multi-node Kubernetes environment on three physical machines using K3s. This ongoing project focuses on Linux administration, container orchestration, and progressively introducing infrastructure automation and deployment workflows.'
+      sl: 'Iz treh računalnikov iz igralnih avtomatov sem sestavil cluster K3s z enim strežnikom in dvema agentoma. Naslednji koraki so preizkusna aplikacija, upravljanje virov s Terraformom in avtomatizacija uvajanja.',
+      en: 'I built a three-node K3s cluster from repurposed slot machine computers, with one server and two agents. Next I’ll deploy a test application, manage Kubernetes resources with Terraform, and automate delivery.'
     },
     details: {
-      sl: `## Pregled projekta
+      sl: `## Arhitektura clusterja
 
-Vzpostavljam lastno multi-node Kubernetes okolje na treh fizičnih računalnikih z uporabo K3s, lahke distribucije Kubernetes. Cilj projekta je razviti praktično razumevanje orkestracije vsebnikov, upravljanja infrastrukture in avtomatizacije uvajanja aplikacij na lastni strojni opremi.
+K3s sem namestil neposredno na tri računalnike, ki so prej poganjali igralne avtomate. Strežniško vozlišče z 8 GB pomnilnika poganja nadzorno ravnino, vključno z API-jem Kubernetes in podatkovno shrambo clusterja. Drugi dve vozlišči imata 8 GB oziroma 4 GB pomnilnika in sta v cluster vključeni kot agenta. Če strežniško vozlišče odpove, API clusterja ni več dostopen.
 
-Projekt razvijam postopoma, od začetne vzpostavitve gruče do uvajanja aplikacij in avtomatiziranih delovnih tokov.
+## Namestitev in prvi preizkus
 
-## Trenutno stanje
+1. Na prvem računalniku sem namestil K3s v strežniškem načinu, s čimer sem vzpostavil nadzorno ravnino.
+2. Na preostalih računalnikih sem namestil agenta K3s. Za pridružitev clusterja agenta potrebujeta naslov strežnika in pridružitveni žeton.
+3. Naslednji korak je z ukazoma \`kubectl get nodes -o wide\` in \`kubectl get pods -A\` preveriti, ali so vsa tri vozlišča v stanju Ready in ali sistemski podi delujejo.
 
-- Nameščen K3s na vseh treh fizičnih računalnikih.
-- Vzpostavljena začetna osnova za večvozliščno Kubernetes okolje.
-- Projekt je v aktivnem razvoju; naslednji koraki vključujejo preverjanje delovanja gruče in uvajanje prvih aplikacijskih obremenitev.
+Namestitev K3s je končana. Prvo aplikacijo in dodatna orodja še pripravljam.
 
-## Načrtovani razvoj
+## Načrt nadaljnjega razvoja
 
-- **Upravljanje virov:** raziskovanje deklarativnega upravljanja Kubernetes virov s Terraformom.
-- **CI/CD:** vzpostavitev avtomatiziranih delovnih tokov za gradnjo in uvajanje aplikacij.
-- **GitOps:** raziskovanje uvajanja aplikacij na podlagi različiciranih konfiguracij v Git repozitoriju.
-- **Spremljanje:** dodajanje orodij za spremljanje stanja gruče in porabe virov.
-- **Dokumentacija in zanesljivost:** dokumentiranje arhitekture, postopkov namestitve ter odpravljanja težav.
+- **Prva aplikacija:** z manifesti v Gitu nameravam uvesti manjši spletni strežnik NGINX kot Deployment in ga znotraj clusterja izpostaviti prek storitve ClusterIP. Preveril bom, na katero vozlišče se razporedi pod, in preizkusil zahteve ter omejitve za procesor in pomnilnik.
+- **Terraform:** ponudnik Kubernetes bom preizkusil v ločenem imenskem prostoru. Z njim bom deklarativno upravljal Deployment in Service ter pred uporabo sprememb pregledal načrt z ukazom \`terraform plan\`. Konfiguracijo bom hranil v Gitu, datoteke s stanjem, kubeconfig in poverilnice pa zunaj repozitorija.
+- **CI/CD in GitOps:** z GitHub Actions nameravam izvajati teste, graditi slike vsebnikov in objavljati njihove različice v GHCR. Ko bo ročno uvajanje ponovljivo, bom s Fluxom ali Argo CD preizkusil usklajevanje stanja clusterja z manifesti v Gitu.
+- **Spremljanje in obnova:** pozneje nameravam s Prometheusom in Grafano spremljati porabo virov ter dokumentirati in preizkusiti postopek varnostnega kopiranja in obnove.`,
+      en: `## Cluster architecture
 
-## Cilji
+I installed K3s directly on three computers that previously powered slot machines. The 8 GB server node hosts the control plane, including the Kubernetes API and the cluster datastore. The other two machines have 8 GB and 4 GB of RAM and join the cluster as agents. The cluster has a single control plane, so its API becomes unavailable if the server goes down.
 
-Projekt mi omogoča praktično raziskovanje Kubernetes infrastrukture na lastni strojni opremi, s poudarkom na ponovljivosti, avtomatizaciji in razumevanju posameznih komponent platforme.
+## Installation and initial validation
 
-Tehnologije in funkcionalnosti dodajam postopoma ter dokumentiram dejansko izvedene korake.`,
-      en: `## Project Overview
+1. I installed K3s in server mode on the first machine to bring up the control plane.
+2. I installed K3s agents on the other two machines. The agents use the server endpoint and a join token to register with the cluster.
+3. My next step is to run \`kubectl get nodes -o wide\` and \`kubectl get pods -A\` to check that all three nodes report Ready and that the system pods are healthy.
 
-I'm building a multi-node Kubernetes environment on three physical machines using K3s, a lightweight Kubernetes distribution. The goal is to develop practical experience with container orchestration, infrastructure management, and application deployment on self-managed hardware.
+K3s is installed. The first application and the rest of the platform tooling are still in progress.
 
-The project is evolving incrementally, starting with the cluster foundation and progressing towards application workloads and automated deployment workflows.
+## Planned development
 
-## Current Progress
-
-- Installed K3s across all three physical machines.
-- Established the initial foundation for a multi-node Kubernetes environment.
-- The project is actively in development, with cluster validation and initial application deployments among the next steps.
-
-## Planned Development
-
-- **Infrastructure management:** Explore declarative management of Kubernetes resources using Terraform.
-- **CI/CD:** Build automated workflows for application builds and deployments.
-- **GitOps:** Explore deploying applications from version-controlled configuration in a Git repository.
-- **Observability:** Introduce tools for monitoring cluster health and resource utilization.
-- **Documentation and reliability:** Document the architecture, setup procedures, and troubleshooting process.
-
-## Project Goals
-
-This project provides a practical environment for exploring Kubernetes infrastructure on self-managed hardware, with an emphasis on reproducibility, automation, and understanding the platform's underlying components.
-
-Technologies and capabilities are being introduced incrementally, with documentation reflecting the work actually completed.`
+- **First workload:** I plan to deploy a small NGINX web server using manifests stored in Git. I’ll use a Deployment and an internal ClusterIP Service, then check where the pod is scheduled and test CPU and memory requests and limits.
+- **Terraform:** I’ll use the Kubernetes provider to manage a Deployment and Service in a separate namespace on the existing cluster. I’ll review changes with \`terraform plan\` before applying them, and keep state, kubeconfig, and credentials outside Git.
+- **CI/CD and GitOps:** I plan to use GitHub Actions to run tests, build container images, and publish versioned images to GHCR. Once manual deployments are repeatable, I’ll try Flux or Argo CD to reconcile the cluster with manifests stored in Git.
+- **Monitoring and recovery:** Later I plan to track resource usage with Prometheus and Grafana, document backup and restore procedures, and run a recovery drill.`
     }
   },
   {
