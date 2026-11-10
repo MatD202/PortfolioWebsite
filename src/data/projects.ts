@@ -77,6 +77,71 @@ K3s is installed. The first application and the rest of the platform tooling are
     }
   },
   {
+    slug: 'ChoreQuest',
+    images: [
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80'
+    ],
+    tags: ['Vue 3', 'TypeScript', 'Pinia', 'Tailwind CSS', 'Express', 'MongoDB', 'GitHub Actions'],
+    title: {
+      sl: 'ChoreQuest – razvoj aplikacije za skupno opravljanje gospodinjskih opravil',
+      en: 'ChoreQuest – Building a Cooperative Household Chore App'
+    },
+    summary: {
+      sl: 'Razvil sem spletno aplikacijo, ki gospodinjska opravila povezuje s tedenskimi nalogami, izkušnjami in nagradami. Člani gospodinjstva si razdelijo delo, spremljajo skupni napredek in zaslužene kovance zamenjajo za dogovorjene nagrade.',
+      en: 'I built a web app that turns household chores into weekly quests with experience points and rewards. Household members share the work, track their progress together, and exchange earned coins for rewards they agree on.'
+    },
+    details: {
+      sl: `## Arhitektura aplikacije
+
+ChoreQuest sem zasnoval kot aplikacijo z ločenima spletnim vmesnikom in API-jem v skupnem repozitoriju. Vmesnik uporablja Vue 3, TypeScript in Vite, za navigacijo skrbi Vue Router, za skupno stanje Pinia, za oblikovanje pa Tailwind CSS. Zaledje temelji na Expressu in podatke shranjuje v MongoDB prek knjižnice Mongoose.
+
+## Gospodinjstva in tedenske naloge
+
+Uporabnik lahko ustvari gospodinjstvo ali se obstoječemu pridruži s kodo za povabilo. Vsako gospodinjstvo ima svoje člane, opravila, nagrade in časovni pas, ki določa meje tedna.
+
+1. Člani dodajo opravila ter jim določijo zahtevnost, število točk izkušenj in kovancev. Opravila so lahko enkratna, dnevna ali tedenska.
+2. Za izbrani teden ustvarijo razpored nalog. Posamezna naloga hrani kopijo podatkov opravila, zato poznejše spremembe predloge ne prepišejo njene zgodovine.
+3. Dodeljeni član označi nalogo kot opravljeno, nadzorna plošča pa prikazuje opravljene naloge in skupni tedenski napredek.
+
+## Napredovanje in nagrade
+
+- **Izkušnje in stopnje:** opravljene naloge prinašajo točke izkušenj, s katerimi član napreduje po stopnjah znotraj gospodinjstva.
+- **Kovanci in nagrade:** člani določijo nagrade in njihovo ceno, nato pa zanje porabijo kovance, zaslužene z opravili. Zgodovina transakcij prikazuje zaslužek in porabo.
+- **Dosežki:** aplikacija vključuje značke za prvo opravljeno nalogo, deset opravljenih nalog in v celoti opravljen skupni teden.
+
+## Prijava in preverjanje sprememb
+
+Prijava uporablja piškotke HttpOnly. Zahteve za spreminjanje podatkov zahtevajo preverjanje izvora in namensko glavo, unovčenje nagrad pa uporablja ključ idempotentnosti za preprečevanje ponovne obdelave iste zahteve.
+
+V repozitoriju je nastavljen postopek GitHub Actions, ki ob potiskanju sprememb in zahtevah za združitev preveri slog kode in tipe, zažene teste ter zgradi aplikacijo.`,
+      en: `## Application architecture
+
+I structured ChoreQuest with a separate web frontend and API in a shared repository. The frontend uses Vue 3, TypeScript, and Vite, with Vue Router for navigation, Pinia for shared state, and Tailwind CSS for styling. The backend uses Express and stores data in MongoDB through Mongoose.
+
+## Households and weekly quests
+
+Users can create a household or join an existing one with an invite code. Each household has its own members, chores, rewards, and timezone, which determines its weekly boundaries.
+
+1. Members create chores and set their effort, experience points, and coin rewards. Chores can occur once, daily, or weekly.
+2. They generate assignments for a selected week. Each assignment keeps a snapshot of the chore details, so later edits to the template do not overwrite its history.
+3. The assigned member marks a task complete, while the dashboard tracks completed assignments and the household’s shared weekly progress.
+
+## Progression and rewards
+
+- **Experience and levels:** completed assignments award experience points that help each member level up within their household.
+- **Coins and rewards:** members define rewards and their prices, then redeem them with coins earned from chores. A transaction history records earnings and spending.
+- **Achievements:** the app includes badges for a first completion, ten completed assignments, and a fully completed team week.
+
+## Authentication and change validation
+
+Authentication uses HttpOnly cookies. Requests that change data require an origin check and a dedicated header, while reward redemption uses an idempotency key to prevent the same request from being processed again.
+
+The repository includes a GitHub Actions workflow that runs linting, type checks, tests, and an application build on pushes and pull requests.`
+    }
+  },
+  {
     slug: 'network-monitor-dashboard',
     images: [
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
