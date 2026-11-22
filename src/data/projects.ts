@@ -3,6 +3,14 @@ import gamematura2 from '../assets/projects/maturaGame1.png';
 import gamematura3 from '../assets/projects/maturaGame2.png';
 import gamematura4 from '../assets/projects/maturaGame3.png';
 
+import ChoreQuest1 from '../assets/projects/WeeklyChoreQuest.webp';
+import ChoreQuest2 from '../assets/projects/SettingsChoreQuest.webp';
+import ChoreQuest3 from '../assets/projects/LoginChoreQuest.webp';
+import ChoreQuest4 from '../assets/projects/CreatingHouseholdChoreQuest.webp';
+
+import homelab from '../assets/projects/homelab.jpg';
+
+
 export interface Project {
   slug: string;
   images: string[];
@@ -16,9 +24,7 @@ export const projects: Project[] = [
   {
     slug: 'DevOps-Platform-Engineering-Homelab',
     images: [
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-      'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80',
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80'
+      homelab.src
     ],
     tags: [
       'Kubernetes',
@@ -79,9 +85,10 @@ K3s is installed. The first application and the rest of the platform tooling are
   {
     slug: 'ChoreQuest',
     images: [
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80',
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=80'
+      ChoreQuest1.src,
+      ChoreQuest2.src,
+      ChoreQuest3.src,
+      ChoreQuest4.src
     ],
     tags: ['Vue 3', 'TypeScript', 'Pinia', 'Tailwind CSS', 'Express', 'MongoDB', 'GitHub Actions'],
     title: {
@@ -141,7 +148,7 @@ Authentication uses HttpOnly cookies. Requests that change data require an origi
 The repository includes a GitHub Actions workflow that runs linting, type checks, tests, and an application build on pushes and pull requests.`
     }
   },
-  {
+   /*{
     slug: 'network-monitor-dashboard',
     images: [
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80',
@@ -160,7 +167,7 @@ The repository includes a GitHub Actions workflow that runs linting, type checks
       sl: 'Zbiranje podatkov poteka preko Prometheus izvoznika, vizualizacija pa s pomočjo prilagojenega spletnega vmesnika.',
       en: 'Data metrics are ingested via Prometheus and rendered using an bla bla bla.'
     }
-  },
+  },*/
   {
     slug: 'Unity3d-Game',
     images: [
