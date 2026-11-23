@@ -100,52 +100,394 @@ K3s is installed. The first application and the rest of the platform tooling are
       en: 'I built a web app that turns household chores into weekly quests with experience points and rewards. Household members share the work, track their progress together, and exchange earned coins for rewards they agree on.'
     },
     details: {
-      sl: `## Arhitektura aplikacije
+      sl: `**ChoreQuest** je spletna aplikacija za upravljanje gospodinjskih opravil, ki sem jo razvil z namenom, da bi bila razdelitev gospodinjskih obveznosti pravičnejša, bolj organizirana in zanimivejša s pomočjo gamification sistema.
 
-ChoreQuest sem zasnoval kot aplikacijo z ločenima spletnim vmesnikom in API-jem v skupnem repozitoriju. Vmesnik uporablja Vue 3, TypeScript in Vite, za navigacijo skrbi Vue Router, za skupno stanje Pinia, za oblikovanje pa Tailwind CSS. Zaledje temelji na Expressu in podatke shranjuje v MongoDB prek knjižnice Mongoose.
+Namesto klasične to-do list aplikacije sem ChoreQuest zasnoval okoli ponavljajočih se tedenskih urnikov, avtomatskega razporejanja opravil in sistema nagrajevanja. Vsako opravilo ima določeno težavnost oziroma effort score, izkustvene točke (XP) in kovance, kar člane gospodinjstva spodbuja k sodelovanju ter omogoča spremljanje individualnega in skupnega napredka.
 
-## Gospodinjstva in tedenske naloge
+Aplikacija je namenjena družinam, parom in sostanovalcem ter podpira članstvo v več gospodinjstvih, prilagodljive pravice upravljanja in avtomatiziran sistem razporejanja opravil.
 
-Uporabnik lahko ustvari gospodinjstvo ali se obstoječemu pridruži s kodo za povabilo. Vsako gospodinjstvo ima svoje člane, opravila, nagrade in časovni pas, ki določa meje tedna.
+## Tech Stack
 
-1. Člani dodajo opravila ter jim določijo zahtevnost, število točk izkušenj in kovancev. Opravila so lahko enkratna, dnevna ali tedenska.
-2. Za izbrani teden ustvarijo razpored nalog. Posamezna naloga hrani kopijo podatkov opravila, zato poznejše spremembe predloge ne prepišejo njene zgodovine.
-3. Dodeljeni član označi nalogo kot opravljeno, nadzorna plošča pa prikazuje opravljene naloge in skupni tedenski napredek.
+- **Frontend:** Vue 3, TypeScript, Vite, Vue Router, Pinia
+- **Styling:** Tailwind CSS, custom CSS, Lucide Icons
+- **Backend:** Node.js, Express 5, REST API
+- **Database:** MongoDB 8, Mongoose
+- **Authentication & Security:** JWT, bcrypt, Helmet, rate limiting, CSRF protection
+- **Validation & Date Handling:** Zod, Luxon
+- **Testing:** Vitest, Supertest, MongoDB Memory Server, jsdom
+- **Infrastructure:** Docker Compose, GitHub Actions, npm Workspaces
 
-## Napredovanje in nagrade
+## Glavne funkcionalnosti
 
-- **Izkušnje in stopnje:** opravljene naloge prinašajo točke izkušenj, s katerimi član napreduje po stopnjah znotraj gospodinjstva.
-- **Kovanci in nagrade:** člani določijo nagrade in njihovo ceno, nato pa zanje porabijo kovance, zaslužene z opravili. Zgodovina transakcij prikazuje zaslužek in porabo.
-- **Dosežki:** aplikacija vključuje značke za prvo opravljeno nalogo, deset opravljenih nalog in v celoti opravljen skupni teden.
+### Upravljanje več gospodinjstev
 
-## Prijava in preverjanje sprememb
+Implementiral sem sistem uporabniških računov, ki uporabnikom omogoča ustvarjanje novih gospodinjstev ali pridružitev obstoječim. Posamezen uporabnik je lahko član več gospodinjstev hkrati in med njimi preklaplja brez potrebe po dodatnih računih.
 
-Prijava uporablja piškotke HttpOnly. Zahteve za spreminjanje podatkov zahtevajo preverjanje izvora in namensko glavo, unovčenje nagrad pa uporablja ključ idempotentnosti za preprečevanje ponovne obdelave iste zahteve.
+Ob ustvarjanju gospodinjstva lahko uporabnik nastavi časovni pas in način upravljanja. Pridružitev obstoječemu gospodinjstvu poteka preko varnih invitation kod, ki jih lahko pooblaščeni člani ponovno generirajo ali prekličejo.
 
-V repozitoriju je nastavljen postopek GitHub Actions, ki ob potiskanju sprememb in zahtevah za združitev preveri slog kode in tipe, zažene teste ter zgradi aplikacijo.`,
-      en: `## Application architecture
+### Chore Templates & Recurring Tasks
 
-I structured ChoreQuest with a separate web frontend and API in a shared repository. The frontend uses Vue 3, TypeScript, and Vite, with Vue Router for navigation, Pinia for shared state, and Tailwind CSS for styling. The backend uses Express and stores data in MongoDB through Mongoose.
+Razvil sem sistem ponovno uporabnih chore templateov, kjer lahko upravljavci gospodinjstva določijo:
 
-## Households and weekly quests
+- Naslov in opis opravila
+- Effort score (1–100)
+- XP in coin nagrade
+- Pogostost ponavljanja (enkratno, dnevno ali tedensko)
+- Želeni dan v tednu
 
-Users can create a household or join an existing one with an invite code. Each household has its own members, chores, rewards, and timezone, which determines its weekly boundaries.
+Templatei služijo kot osnova za generiranje tedenskih opravil, kar pomeni, da ponavljajočih se nalog ni treba vsak teden ustvarjati ročno.
 
-1. Members create chores and set their effort, experience points, and coin rewards. Chores can occur once, daily, or weekly.
-2. They generate assignments for a selected week. Each assignment keeps a snapshot of the chore details, so later edits to the template do not overwrite its history.
-3. The assigned member marks a task complete, while the dashboard tracks completed assignments and the household’s shared weekly progress.
+### Avtomatsko in pravično razporejanje opravil
 
-## Progression and rewards
+Eden glavnih tehničnih izzivov projekta je bil razvoj algoritma, ki gospodinjska opravila čim bolj pravično razdeli med člane gospodinjstva.
 
-- **Experience and levels:** completed assignments award experience points that help each member level up within their household.
-- **Coins and rewards:** members define rewards and their prices, then redeem them with coins earned from chores. A transaction history records earnings and spending.
-- **Achievements:** the app includes badges for a first completion, ten completed assignments, and a fully completed team week.
+Implementiral sem determinističen **Longest Processing Time (LPT) greedy load-balancing algoritem**, ki opravila razporeja glede na njihov effort score in trenutno obremenitev posameznega člana.
 
-## Authentication and change validation
+Algoritem deluje po naslednjih korakih:
 
-Authentication uses HttpOnly cookies. Requests that change data require an origin check and a dedicated header, while reward redemption uses an idempotency key to prevent the same request from being processed again.
+1. Opravila razvrsti glede na effort score, pri čemer imajo zahtevnejša opravila prednost.
+2. Preveri trenutno skupno obremenitev vsakega člana v izbranem tednu.
+3. Upošteva tudi količino opravljenega dela v preteklih štirih tednih, da je razporeditev pravičnejša na daljši rok.
+4. Vsako opravilo dodeli trenutno najmanj obremenjenemu članu in posodobi njegovo skupno obremenitev.
 
-The repository includes a GitHub Actions workflow that runs linting, type checks, tests, and an application build on pushes and pull requests.`
+Takšen pristop zmanjšuje možnost, da bi isti član vedno dobival zahtevnejša opravila, hkrati pa zagotavlja predvidljivo in ponovljivo razporejanje.
+
+Z uporabo knjižnice Luxon sem implementiral tudi timezone-aware scheduling, ki zagotavlja pravilno določanje začetkov tednov in rokov opravil glede na lokalni časovni pas gospodinjstva, vključno s prehodi med poletnim in zimskim časom.
+
+### Task Completion & Approval Workflows
+
+Člani gospodinjstva lahko pregledujejo svoja dodeljena opravila ali celoten seznam opravil gospodinjstva, označujejo naloge kot opravljene in spremljajo svoj napredek.
+
+Implementiral sem dva načina upravljanja gospodinjstva:
+
+- **Shared Mode:** Vsi člani lahko upravljajo opravila, nagrade, tedensko planiranje in invitation kode.
+- **Manager-Led Mode:** Lastnik gospodinjstva upravlja nastavitve in lahko po želji zahteva potrditev opravljenih nalog, preden se članom dodelijo nagrade.
+
+Če je omogočen approval workflow, se opravljena naloga najprej premakne v stanje awaiting_approval. XP in kovanci se uporabniku dodelijo šele, ko lastnik gospodinjstva potrdi opravljeno nalogo.
+
+Implementiral sem tudi ročno prerazporejanje opravil ter role-based permissions, ki zagotavljajo, da lahko uporabniki izvajajo samo dejanja, za katera imajo ustrezne pravice.
+
+### Gamification & Reward System
+
+Da bi bila gospodinjska opravila bolj zanimiva, sem razvil gamification sistem, ki temelji na XP točkah, levelih, achievementih in nagradah.
+
+Člani z opravljanjem nalog pridobivajo XP in kovance. XP vpliva na njihov level znotraj gospodinjstva, pri čemer sem uporabil kvadratno progresijsko formulo:
+
+level = floor(sqrt(xp / 100)) + 1
+
+Z napredovanjem vsak naslednji level zahteva več skupno pridobljenih XP točk.
+
+Implementiral sem tudi achievement badges za individualne dosežke in skupne uspehe gospodinjstva, kot je na primer uspešno dokončanje vseh predvidenih opravil v določenem tednu.
+
+Pridobljene kovance lahko člani porabijo v prilagodljivem **Reward Shopu**, kjer lahko gospodinjstva ustvarijo lastne nagrade, na primer izbiro filma za filmski večer ali zajtrk v postelji.
+
+Vsi pridobljeni in porabljeni kovanci se beležijo v immutable transaction ledgerju, ki ohranja dosledno zgodovino aktivnosti posameznega člana.
+
+## Arhitektura & Implementacija
+
+### Full-Stack Monorepo
+
+Projekt sem organiziral kot npm workspaces monorepo z ločenima frontend in backend aplikacijama.
+
+Frontend je Vue 3 single-page application, napisana v TypeScriptu, medtem ko backend uporablja Express 5 in ponuja REST API.
+
+Za centraliziran state management sem uporabil Pinio, ki upravlja podatke o prijavljenem uporabniku, gospodinjstvih, dashboardu, članih, opravilih in nagradah.
+
+Komunikacija med frontendom in backendom poteka preko typed API wrapperja, ki skrbi za authentication cookies, request headers, obdelavo napak in idempotency keys.
+
+### Database Design & Data Integrity
+
+MongoDB podatkovno bazo sem zasnoval okoli osmih kolekcij:
+
+- Users
+- Households
+- Household Memberships
+- Chore Templates
+- Chore Assignments
+- Rewards
+- Wallet Transactions
+- Achievement Unlocks
+
+Za zagotavljanje data consistency sem uporabil Mongoose schemas, compound unique indexes in multi-document ACID transactions.
+
+Pri razvoju sem posebno pozornost namenil naslednjim rešitvam:
+
+**Immutable Assignment Snapshots**
+
+Ob generiranju tedenskih opravil se podatki iz chore templatea, kot so naslov, opis, effort score, XP in kovanci, kopirajo neposredno v ustvarjen assignment.
+
+To zagotavlja, da kasnejše spremembe ali arhiviranje templatea ne vplivajo na že ustvarjena opravila ali zgodovinske nagrade.
+
+**Concurrency-Safe Weekly Planning**
+
+Implementiral sem transaction serialization z uporabo version counterja na nivoju gospodinjstva.
+
+S tem sem preprečil podvojeno generiranje opravil ob sočasnih zahtevah in omogočil usklajeno izvajanje operacij, kot so zaključevanje nalog in unovčevanje nagrad.
+
+**Idempotent Reward Transactions**
+
+Za preprečevanje večkratnega odštevanja kovancev sem pri unovčevanju nagrad implementiral UUID-based idempotency keys.
+
+Če uporabnik isto zahtevo pošlje večkrat, na primer zaradi dvojnega klika ali ponovnega pošiljanja requesta, sistem vrne rezultat obstoječe transakcije, namesto da bi kovance ponovno odštel.
+
+Uporabil sem tudi atomic conditional database updates, ki preprečujejo unovčevanje nagrad, kadar uporabnik nima dovolj kovancev.
+
+### Authentication & Security
+
+Implementiral sem authentication sistem z uporabo JWT tokenov, shranjenih v HTTP-only cookies, in gesel, zaščitenih z bcrypt hashingom.
+
+Backend vključuje tudi dodatne varnostne mehanizme:
+
+- Role-based access control za operacije znotraj gospodinjstev
+- Validacijo vhodnih podatkov z Zod
+- Rate limiting na authentication in household joining endpointih
+- Helmet security headers
+- Origin validation in custom-header CSRF protection
+- Omejen cross-origin dostop
+- Secure cookie konfiguracijo za production okolje
+- Preverjanje članstva v gospodinjstvu za preprečevanje nepooblaščenega dostopa in resource enumeration
+
+Authorization logiko sem centraliziral, da so permission checks dosledni skozi celoten API.
+
+### Responsive Frontend & Accessibility
+
+Frontend sem razvil z Vue 3, TypeScriptom ter kombinacijo Tailwind CSS in custom CSS.
+
+Uporabniški vmesnik vključuje:
+
+- Login in registration strani
+- Onboarding za ustvarjanje ali pridružitev gospodinjstvu
+- Household dashboard
+- Upravljanje in pregled opravil
+- Reward Shop
+- Uporabniški profil in statistiko
+- Household settings
+
+Pri razvoju sem se osredotočil na responsive design, da aplikacija pravilno deluje na različnih velikostih zaslonov.
+
+Implementiral sem tudi več accessibility izboljšav, kot so keyboard focus trapping znotraj modalnih oken, zapiranje z Escape tipko, onemogočanje interakcije z ozadjem ob odprtem modalu, ARIA progress indicators in podpora za reduced-motion nastavitve.
+
+### Testing & Development Infrastructure
+
+Za večjo zanesljivost in lažje vzdrževanje aplikacije sem konfiguriral automated testing in razvojno infrastrukturo.
+
+Backend vključuje integration teste z uporabo Vitest, Supertest in in-memory MongoDB replica seta. Testi preverjajo scheduling logiko, delovanje API-ja in pravice uporabnikov znotraj gospodinjstev.
+
+Konfiguriral sem tudi:
+
+- Docker Compose za lokalni MongoDB replica set
+- GitHub Actions CI pipeline
+- Automated linting in type checking
+- Test execution in build verification
+- Idempotent database seeder za ustvarjanje demo podatkov
+
+## Tehnični izzivi
+
+Med najzanimivejšimi tehničnimi izzivi, s katerimi sem se srečal pri razvoju, so bili:
+
+- **Fair Scheduling:** Razvoj algoritma, ki pravično razporeja tedenska opravila in upošteva tudi preteklo obremenitev posameznih članov.
+- **Concurrent Operations:** Preprečevanje podvojenega generiranja opravil, večkratnih izplačil nagrad in nekonsistentnega stanja uporabniških denarnic.
+- **Timezone Handling:** Pravilno generiranje ponavljajočih se opravil v različnih časovnih pasovih in ob prehodih med poletnim in zimskim časom.
+- **Multi-Tenant Authorization:** Izolacija podatkov posameznih gospodinjstev ob hkratni podpori uporabnikom, ki so člani več gospodinjstev.
+- **Transactional Gamification:** Zagotavljanje, da so XP, kovanci, achievementi in statusi opravil medsebojno usklajeni tudi pri kompleksnejših approval workflowih.
+
+## Povzetek
+
+ChoreQuest združuje upravljanje gospodinjskih opravil, avtomatizirano razporejanje in gamification sistem v aplikacijo, ki omogoča lažjo organizacijo in pravičnejšo razdelitev vsakodnevnih obveznosti.
+
+Pri razvoju projekta sem pridobil in poglobil praktične izkušnje s full-stack arhitekturo, razvojem algoritmov, database transactions, authentication in authorization sistemi, responsive UI razvojem ter automated testingom.
+
+Najpomembnejši del projekta je bila implementacija zanesljivega sistema, kjer pravičnost razporejanja, uporabniške pravice in transakcije nagrajevanja zagotavlja backend logika, namesto da bi se aplikacija zanašala zgolj na frontend preverjanja.`,
+      en: `**ChoreQuest** is a cooperative household task management web application I developed to make sharing household responsibilities fairer, more organized, and more engaging through gamification.
+
+Rather than building a traditional to-do list, I designed ChoreQuest around recurring weekly schedules, automated task distribution, and a reward system. Each chore has an effort score, experience points (XP), and coins, encouraging household members to contribute while tracking their individual and collective progress.
+
+The application supports families, couples, and roommates, with multiple household memberships, customizable management permissions, and an automated scheduling system.
+
+## Tech Stack
+
+- **Frontend:** Vue 3, TypeScript, Vite, Vue Router, Pinia
+- **Styling:** Tailwind CSS, custom CSS, Lucide Icons
+- **Backend:** Node.js, Express 5, REST API
+- **Database:** MongoDB 8, Mongoose
+- **Authentication & Security:** JWT, bcrypt, Helmet, rate limiting, CSRF protection
+- **Validation & Date Handling:** Zod, Luxon
+- **Testing:** Vitest, Supertest, MongoDB Memory Server, jsdom
+- **Infrastructure:** Docker Compose, GitHub Actions, npm Workspaces
+
+## Key Features
+
+### Multi-Household Management
+
+I implemented an account system that allows users to create or join multiple households and switch between them without needing separate accounts.
+
+When creating a household, users can configure its timezone and management mode. Existing households can be joined through secure invitation codes, which can be regenerated or revoked by authorized members.
+
+### Chore Templates & Recurring Tasks
+
+I built a reusable chore template system where household managers can configure:
+
+- Chore titles and descriptions
+- Effort scores (1–100)
+- XP and coin rewards
+- One-time, daily, or weekly recurrence
+- Preferred days of the week
+
+These templates act as blueprints for generating weekly assignments, eliminating the need to recreate recurring chores manually.
+
+### Automated Fair Task Distribution
+
+One of the main technical challenges was designing a scheduling algorithm that distributes household responsibilities fairly.
+
+I implemented a deterministic **Longest Processing Time (LPT) greedy load-balancing algorithm** that assigns chores based on their effort scores and each member's workload.
+
+The algorithm:
+
+1. Sorts chores by effort, starting with the most demanding tasks.
+2. Evaluates each household member's assigned workload for the current week.
+3. Considers completed effort over the previous four weeks to account for historical contributions.
+4. Assigns each chore to the least-loaded member and updates their workload.
+
+This approach helps prevent one person from consistently receiving more demanding tasks while keeping the scheduling process predictable and reproducible.
+
+I also implemented timezone-aware scheduling using Luxon, ensuring that weekly boundaries and due dates follow each household's local timezone, including daylight saving time transitions.
+
+### Task Completion & Approval Workflows
+
+Household members can view their personal assignments or the full household task board, complete chores, and track their progress.
+
+I designed two household governance modes:
+
+- **Shared Mode:** All members can manage chores, rewards, weekly planning, and invitations.
+- **Manager-Led Mode:** The household owner controls configuration and can optionally require approval before completed chores are rewarded.
+
+When approval is enabled, submitted chores enter a pending review state. XP and coins are awarded only after the household owner approves the completion.
+
+I also implemented manual task reassignment and role-based permissions to ensure members can only perform actions they are authorized to access.
+
+### Gamification & Reward System
+
+To make household responsibilities more engaging, I developed a gamification system built around XP, levels, achievements, and redeemable rewards.
+
+Members earn XP and coins by completing chores. XP contributes to their household level using a quadratic progression formula:
+
+level = floor(sqrt(xp / 100)) + 1
+
+As members progress, each new level requires more cumulative XP.
+
+I also implemented achievement badges for individual milestones and collective household accomplishments, including completing every scheduled chore in a week.
+
+Coins can be spent in a customizable Reward Shop, where households create their own rewards, such as choosing a movie night or receiving breakfast in bed.
+
+All earnings and redemptions are recorded in an immutable transaction ledger to maintain a consistent history of each member's activity.
+
+## Architecture & Implementation
+
+### Full-Stack Monorepo
+
+I structured the project as an npm workspaces monorepo with separate frontend and backend applications.
+
+The frontend is a Vue 3 single-page application written in TypeScript, while the backend exposes an Express 5 REST API.
+
+I used Pinia for centralized state management, handling authentication state, active households, dashboards, members, chores, and rewards.
+
+The frontend communicates with the backend through a typed API wrapper that handles authentication cookies, request headers, error normalization, and idempotency keys.
+
+### Database Design & Data Integrity
+
+I designed the MongoDB database around eight collections:
+
+- Users
+- Households
+- Household Memberships
+- Chore Templates
+- Chore Assignments
+- Rewards
+- Wallet Transactions
+- Achievement Unlocks
+
+I used Mongoose schemas, compound unique indexes, and multi-document ACID transactions to enforce data consistency.
+
+Several important design decisions helped make the application reliable:
+
+**Immutable Assignment Snapshots**
+
+When generating weekly chores, I store a snapshot of the original template's title, description, effort, XP, and coin values.
+
+This ensures that modifying or archiving a chore template does not affect previously generated assignments or historical rewards.
+
+**Concurrency-Safe Weekly Planning**
+
+I implemented transaction serialization using a household-level version counter.
+
+This prevents concurrent scheduling requests from generating duplicate assignments and helps coordinate operations such as chore completion and reward redemption.
+
+**Idempotent Reward Transactions**
+
+To prevent users from accidentally spending coins multiple times, I implemented UUID-based idempotency keys for reward redemptions.
+
+Repeated requests return the existing transaction result instead of charging the user again.
+
+I also used atomic conditional database updates to prevent users from redeeming rewards when they have insufficient coins.
+
+### Authentication & Security
+
+I implemented authentication using JWTs stored in HTTP-only cookies and passwords hashed with bcrypt.
+
+The backend includes several additional security measures:
+
+- Role-based access control for household operations
+- Request validation using Zod
+- Rate limiting on authentication and household joining endpoints
+- Helmet security headers
+- Origin validation and custom-header CSRF protection
+- Restricted cross-origin requests
+- Secure cookie configuration for production
+- Household membership checks that prevent unauthorized resource enumeration
+
+I centralized authorization logic to keep permission checks consistent throughout the API.
+
+### Responsive Frontend & Accessibility
+
+I built the frontend with Vue 3, TypeScript, and a combination of Tailwind CSS and custom styling.
+
+The interface includes authentication and onboarding screens, household dashboards, chore management, reward management, user profiles, and household settings.
+
+I focused on creating a responsive interface that works across different screen sizes.
+
+I also implemented accessibility improvements such as keyboard focus trapping inside modal dialogs, Escape-key dismissal, background interaction locking, ARIA progress indicators, and reduced-motion support.
+
+### Testing & Development Infrastructure
+
+I configured automated testing and development infrastructure to improve reliability and maintainability.
+
+The backend includes integration tests using Vitest, Supertest, and an in-memory MongoDB replica set. These cover scheduling logic, API behavior, and household permissions.
+
+I also configured:
+
+- Docker Compose for a local MongoDB replica set
+- GitHub Actions for continuous integration
+- Automated linting and type checking
+- Test execution and build verification
+- An idempotent database seeder for local demonstration data
+
+## Technical Highlights
+
+Some of the most interesting challenges I worked on were:
+
+- **Fair scheduling:** Designing an algorithm that balances weekly responsibilities while accounting for historical workload.
+- **Concurrent operations:** Preventing duplicate chore generation, double rewards, and inconsistent wallet balances.
+- **Timezone handling:** Generating recurring assignments accurately across different timezones and daylight saving transitions.
+- **Multi-tenant authorization:** Keeping household data isolated while supporting users who belong to multiple households.
+- **Transactional gamification:** Ensuring XP, coins, achievements, and task status remain synchronized during completion and approval workflows.
+
+## Summary
+
+ChoreQuest combines household management with automated scheduling and gamification to make recurring responsibilities easier to coordinate.
+
+Through this project, I worked on full-stack application architecture, algorithm design, database transactions, authentication, authorization, responsive UI development, and automated testing.
+
+The most important part of the project was building a reliable system where fairness, permissions, and reward transactions are enforced by the backend rather than relying only on frontend behavior.`
     }
   },
    /*{
@@ -198,7 +540,7 @@ Igra vključuje šest različnih vrst sovražnikov, od katerih ima vsak svoje zn
 - **Goblin:** Igralca napada z metanjem kamnov, kadar ga ima v vidnem polju.
 - **Vešča:** Leti skozi okolje in igralca napade z mečem, ko se ji dovolj približa.
 - **Okostnjak:** Se požene proti igralcu in ob stiku z njim eksplodira.
-- **Dva šefa:** Uporabljata različne vrste magije in posebne napadalne poteze, ki predstavljajo dodaten izziv.
+- **Dva "Boss-a":** Uporabljata različne vrste magije in posebne napadalne poteze, ki predstavljajo dodaten izziv.
 
 Različni načini napadanja poskrbijo za raznoliko bojevanje in igralca spodbujajo k prilagajanju strategije glede na nasprotnika.
 
@@ -216,14 +558,14 @@ Na prvem proceduralno generiranem nivoju se generiranje nadaljuje, dokler nivo n
 
 Igra vključuje več medsebojno povezanih sistemov, med drugim sisteme za zdravje, moč in magijo. Igralec lahko svoje sposobnosti izboljšuje z uporabo različnih napojev.
 
-Napoji imajo različne učinke. Napoj za zdravje lahko na primer obnovi izgubljene točke zdravja ali poveča največje možno število točk zdravja. Ti sistemi omogočajo napredovanje igralca in mu pomagajo pri pripravi na zahtevnejše spopade.
+Napoji imajo različne učinke. Napoj za zdravje lahko na primer obnovi izgubljene točke zdravja ali poveča največje možno število točk zdravja. Ti sistemi omogočajo napredovanje igralca in mu pomagajo pri pripravi na zahtevnejše spopade. 
 
 ## Razvoj
 
-Pri razvoju sem se osredotočil na izdelavo 3D igralnega okolja, implementacijo različnih vrst sovražnikov in njihovih načinov napadanja, razvoj sistema proceduralnega generiranja nivojev ter povezovanje različnih igralnih sistemov v celovito igralno izkušnjo.`,
+Pri razvoju sem se osredotočil na izdelavo 3D igralnega okolja, implementacijo različnih vrst sovražnikov in njihovih načinov napadanja, razvoj sistema proceduralnega generiranja nivojev ter povezovanje različnih igralnih sistemov v celovito igralno izkušnjo. Kmalu po začetku izdelave igre sem se tudi soočal z izzivi optimizacije, katere sem odpravil z Occlusion Culling-om ter Light Baking-om, kjer sem ga lahko vklučil. Razmišljal sem tudi o dodajanju LOD sistema, ampak ta ni zares prišel v poštev zaradi manjših nivojev in že optimiziranih low-poly modelov.`,
       en: `## Game Overview
 
-A 3D dungeon crawler developed in Unity as a graduation project. Players explore a custom-designed starting level and two procedurally generated levels, battle different types of monsters, and use a variety of weapons and magic to defeat their enemies.
+A 3D dungeon crawler developed in Unity as a graduation project. Players explore a custom-designed starting level and two procedurally generated levels, battle different types of monsters, and use a variety of weapons and magic to defeat enemies.
 
 ## Enemies and Combat System
 
@@ -233,7 +575,7 @@ The game features six distinct enemy types, each with its own behavior and attac
 - **Goblin:** Throws rocks at the player whenever they are within its line of sight.
 - **Witch:** Flies through the environment and attacks the player with a sword when they get within range.
 - **Skeleton:** Charges toward the player and explodes upon contact.
-- **Two bosses:** Use different types of magic and special attacks to provide an additional challenge.
+- **Two bosses:** Use different types of magic and special attacks to challange the player.
 
 These varied attack patterns create more engaging combat encounters and encourage players to adapt their strategies to each opponent.
 
@@ -255,7 +597,7 @@ Each potion has its own effects. For example, a health potion can restore lost h
 
 ## Development
 
-During development, I focused on creating the 3D game environment, implementing different enemy types and their attack behaviors, developing the procedural level generation system, and integrating the various gameplay systems into a cohesive gaming experience.`
+During development, I focused on creating the 3D game environment, implementing different enemy types and their attack behaviors, developing the procedural level generation system, and integrating the various gameplay systems into a cohesive gaming experience. A little after starting the project, I had to face with some optimizational challaneges, as the game was running slowly. To fix this, I implemented Occlusion Culling and light baking. I also thought about implementing an LOD system but decided against it because the game has small levels and already optimized low-poly assets.`
     }
   }
 ];
